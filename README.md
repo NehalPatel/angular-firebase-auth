@@ -68,38 +68,49 @@ npm install @angular/fire@^17.1.0 bootstrap@^5.3.8
 1.  Go to the [Firebase Console](https://console.firebase.google.com/).
 2.  Click **"Add project"**.
     ![Firebase Console - Create Project](/images/1.png)
-    *Caption: Click the "Add project" card to begin.*
+    *Click Getting Start*
+    ![Firebase Console - Create Project](/images/2.png)
+    *Give a Project name and continue*
+    ![Firebase Console - Create Project](/images/3.png)
+    *Disable Google Gemini AI (Optional)*
+    ![Firebase Console - Create Project](/images/4.png)
 
 3.  Name it (e.g., `auth-demo`) and disable Google Analytics for this tutorial.
 4.  Click **"Create project"**.
+5.  Add an application "Add App" in this project
+
+    ![Firebase Console - Build Authentication](/images/5.png)
+6.  Select web app and give a unique application name
+    *Caption: Navigate to the Authentication section under the Build menu.*
+
+    ![Firebase Console - Build Authentication](/images/6.png)
+    ![Firebase Console - Build Authentication](/images/7.png)
+7.  Save all the credentials in a file.
+
+    ![Firebase Console - Build Authentication](/images/8.png)
 
 ### Step 2: Enable Authentication
 1.  Select **Build** > **Authentication** from the left sidebar.
-    ![Firebase Console - Build Authentication](/images/2.png)
-    *Caption: Navigate to the Authentication section under the Build menu.*
+
 
 2.  Click **"Get started"**.
 3.  Select the **Sign-in method** tab.
 4.  Click **Email/Password**.
-    ![Firebase Console - Sign-in Method](/images/3.png)
-    *Caption: Select Email/Password from the list of providers.*
+
+    ![Firebase Console - Sign-in Method](/images/9.png)
 
 5.  Enable the **Email/Password** toggle and click **Save**.
+    ![Firebase Console - Sign-in Method](/images/10.png)
+    *Caption: Select Email/Password from the list of providers.*
 
-### Step 3: Get Configuration
-1.  Click the **Project Overview** (gear icon) > **Project settings**.
-2.  Scroll to "Your apps" and click the **Web** icon (`</>`).
-    ![Firebase Console - Web App](/images/4.png)
-    *Caption: Click the web icon to register your application.*
+    ![Firebase Console - Sign-in Method](/images/11.png)
 
-3.  Register app with a nickname (e.g., `Angular App`).
-4.  **Copy the `firebaseConfig` object**. You will need this for the next section.
-    ![Firebase Console - Config](/images/5.png)
-    *Caption: Copy your unique firebaseConfig object.*
+    ![Firebase Console - Sign-in Method](/images/14.png)
 
----
+    *Logged in users list will be shown here.*
 
-## 5. Project Configuration
+
+## 3. Project Configuration
 
 ### Step 1: Configure Bootstrap
 To make Bootstrap styles available, modify `angular.json`.
@@ -156,11 +167,11 @@ export const appConfig: ApplicationConfig = {
 
 ---
 
-## 6. Component Implementation Guide
+## 4. Component Implementation Guide
 
 This section provides the complete code for building the authentication system. Follow these steps in order.
 
-### 6.1 Authentication Service (`AuthService`)
+### 4.1 Authentication Service (`AuthService`)
 **Purpose**: Centralizes all Firebase Authentication logic (Login, Register, Logout).
 **Dependencies**: `AngularFireAuth`, `RxJS`.
 
@@ -211,7 +222,7 @@ export class AuthService {
 }
 ```
 
-### 6.2 Authentication Guard (`AuthGuard`)
+### 4.2 Authentication Guard (`AuthGuard`)
 **Purpose**: Protects routes (like `/profile`) from being accessed by unauthenticated users.
 
 **Command**:
@@ -242,7 +253,7 @@ export const authGuard: CanActivateFn = (route, state) => {
 };
 ```
 
-### 6.3 Login Component
+### 4.3 Login Component
 **Purpose**: Allows existing users to sign in.
 
 **Command**:
@@ -283,7 +294,7 @@ export class LoginComponent {
       this.isLoading = true;
       this.errorMessage = null;
       const { email, password } = this.loginForm.value;
-      
+
       this.authService.login(email!, password!).subscribe({
         next: () => {
           this.isLoading = false;
@@ -299,9 +310,10 @@ export class LoginComponent {
 }
 ```
 *Note: The HTML template uses Bootstrap classes for styling (e.g., `card`, `form-control`, `btn-primary`).*
-![Login Component UI](images/login-screen.png)
 
-### 6.4 Register Component
+![Login Component UI](images/15.png)
+
+### 4.4 Register Component
 **Purpose**: Creates new user accounts.
 
 **Command**:
@@ -320,13 +332,13 @@ export class RegisterComponent {
     email: ['', [Validators.required, Validators.email]],
     password: ['', [Validators.required, Validators.minLength(6)]]
   });
-  
+
   // onSubmit calls this.authService.register(email, username, password)
 }
 ```
-![Register Component UI](images/register-screen.png)
+![Register Component UI](images/12.png)
 
-### 6.5 User Profile Component
+### 4.5 User Profile Component
 **Purpose**: Displays user info and allows updates (Protected Route).
 
 **Command**:
@@ -340,22 +352,22 @@ ng generate component components/user-profile
 export class UserProfileComponent implements OnInit {
   authService = inject(AuthService);
   user: User | null = null;
-  
+
   ngOnInit(): void {
     this.authService.user$.subscribe(user => {
       this.user = user;
       // Patch form values...
     });
   }
-  
+
   logout(): void {
     this.authService.logout().subscribe(() => this.router.navigate(['/login']));
   }
 }
 ```
-![Profile Component UI](images/profile-screen.png)
+![Profile Component UI](images/13.png)
 
-### 6.6 Configure Routes
+### 4.6 Configure Routes
 **Purpose**: Connect URLs to components.
 
 **Implementation (`src/app/app.routes.ts`):**
@@ -378,9 +390,8 @@ export const routes: Routes = [
 
 ---
 
-## 7. Verification Steps
+## 5 Run the project
 
-### Step 1: Smoke Test
 Start the application to ensure the build is successful and dependencies are loaded.
 
 ```bash
@@ -388,44 +399,3 @@ npm start
 ```
 
 *   Open your browser to `http://localhost:4200`.
-*   **Verify Bootstrap**: The font should look like Helvetica/Arial (Bootstrap default), not Times New Roman.
-*   **Verify Console**: Open Developer Tools (F12) > Console. Ensure there are no red errors related to "FirebaseApp" or "InjectionToken".
-
-### Step 2: Check Installation
-Run the following command to verify package versions:
-
-```bash
-npm list @angular/fire bootstrap
-```
-*   Ensure `@angular/fire` is `17.x`.
-*   Ensure `bootstrap` is `5.3.x`.
-
----
-
-## 8. Troubleshooting
-
-### Common Issues
-
-| Issue | Cause | Solution |
-| :--- | :--- | :--- |
-| **"ng is not recognized"** | Angular CLI not installed or not in PATH. | Run `npm install -g @angular/cli`. Restart terminal. |
-| **"NullInjectorError: No provider for FirebaseApp"** | Firebase not initialized. | Double-check `app.config.ts` imports and `provideFirebaseApp` call. |
-| **Bootstrap styles not showing** | `angular.json` not updated or server not restarted. | Save `angular.json` and **restart** `npm start`. |
-| **Deployment Errors** | Node version mismatch. | Ensure you are using Node 18.13+. |
-
-### Helpful Tips
-*   **Restart Server**: Whenever you modify `angular.json`, you MUST stop (`Ctrl+C`) and restart (`npm start`) the server.
-*   **Auto-Import**: In VS Code, start typing a class name (e.g., `provideAuth`) and press `Enter` to auto-import it.
-
----
-
-## Reference: Cloning This Repository
-If you prefer to start with the completed code:
-
-```bash
-git clone <repository-url>
-cd angular-firebase-auth
-npm install
-# Configure app.config.ts with your Firebase credentials
-npm start
-```
